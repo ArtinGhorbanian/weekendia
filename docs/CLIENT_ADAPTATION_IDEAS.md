@@ -39,4 +39,3 @@ These are architectural extension points, not proof that a third-party service i
 - What evidence is required before a recommendation may be described as verified?
 
 Any resulting scope should update the [Architecture](ARCHITECTURE.md), [Security Model](SECURITY_MODEL.md), and [Release Checklist](RELEASE_CHECKLIST.md) before implementation.
-

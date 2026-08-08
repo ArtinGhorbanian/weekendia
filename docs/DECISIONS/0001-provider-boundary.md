@@ -47,4 +47,3 @@ Automated tests confirm deterministic demo output, explicit mode configuration, 
 ## Reconsider when
 
 Revisit this ADR if the product introduces structured plan objects, streaming, queues, licensed live data, multiple active providers, or provider failover. Preserve explicit mode disclosure and a network-free test path.
-

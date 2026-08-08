@@ -32,4 +32,3 @@ Security vulnerabilities follow the separate private process in [SECURITY.md](SE
 Authorized project moderators may seek clarification, set communication boundaries, remove content, restrict participation, or revoke repository access. The response should consider severity, impact, context, prior behavior, and the safety of affected people. A person subject to action may request a review through a different authorized project representative when one is available.
 
 This policy defines collaboration expectations; it does not determine employment, ownership, authorship, or licensing rights.
-

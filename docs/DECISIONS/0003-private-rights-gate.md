@@ -44,4 +44,3 @@ The release checklist begins with this hard gate, and the repository has no proj
 ## Reconsider when
 
 Only an authorized reviewer may supersede this ADR, after the clearance evidence above is recorded and any required remediation is complete. The superseding decision must identify the approved license, branding scope, repository visibility, distribution channels, notices, and accountable rights holder.
-

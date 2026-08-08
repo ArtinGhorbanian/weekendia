@@ -30,4 +30,3 @@ Support can help interpret documented local setup, tests, application errors, an
 The Flask development server is supported only for local evaluation. Any future hosted deployment requires a separately reviewed architecture, access model, observability plan, data-handling assessment, and operational owner.
 
 Start with the [README](README.md), then consult [Architecture](docs/ARCHITECTURE.md), [Security model](docs/SECURITY_MODEL.md), and [Validation](docs/VALIDATION.md).
-
