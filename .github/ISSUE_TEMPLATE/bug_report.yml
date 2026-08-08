@@ -1,0 +1,81 @@
+name: Bug report
+description: Report a reproducible defect without sharing secrets or private data.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a defect. For vulnerabilities, use the private process in SECURITY.md instead of an issue. Remove API keys, personal data, and private plan content from all fields and attachments.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission checks
+      options:
+        - label: I searched existing issues for the same behavior.
+          required: true
+        - label: I removed secrets, personal data, and private provider content.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Planner mode
+      options:
+        - Demo
+        - OpenAI
+        - Both
+        - Unknown
+    validations:
+      required: true
+
+  - type: input
+    id: revision
+    attributes:
+      label: Commit or private release
+      description: Provide the commit SHA or private release identifier when known.
+      placeholder: Commit SHA or release identifier
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Provide the smallest sequence that consistently reproduces the issue.
+      placeholder: |
+        1. Start the application with...
+        2. Open...
+        3. Submit...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include Python version, operating system, browser, and sanitized configuration relevant to the defect.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs or screenshots
+      description: Do not include credentials, request payloads, provider responses, or personal data.

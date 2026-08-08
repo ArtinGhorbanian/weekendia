@@ -1,0 +1,47 @@
+name: Feature request
+description: Propose a focused product or engineering improvement.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the need and constraints without including confidential information, personal data, or third-party material that cannot be redistributed.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: What user need or engineering constraint should be addressed?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed outcome
+      description: Describe the observable behavior, not only a preferred implementation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy, security, and provider impact
+      description: Explain whether the change adds data collection, external processing, credentials, permissions, or cost exposure.
+    validations:
+      required: true
+
+  - type: textarea
+    id: rights
+    attributes:
+      label: Rights and provenance
+      description: Identify any external code, assets, data, names, or licenses the proposal would introduce.
+    validations:
+      required: true

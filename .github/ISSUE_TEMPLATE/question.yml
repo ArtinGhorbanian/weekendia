@@ -1,0 +1,43 @@
+name: Question
+description: Ask a scoped usage or implementation question.
+title: "[Question]: "
+labels:
+  - question
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not use this form for vulnerabilities. Follow SECURITY.md for private reporting, and remove all secrets and personal plan data.
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: What are you trying to do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: attempted
+    attributes:
+      label: What have you tried?
+      description: Include sanitized commands or configuration when useful.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Planner mode
+      options:
+        - Demo
+        - OpenAI
+        - Not applicable
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional sanitized context
+      description: Do not include keys, tokens, personal data, or private provider responses.
