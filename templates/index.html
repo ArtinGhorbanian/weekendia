@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#07101d">
+    <meta name="description" content="Weekendia, an intelligent 3D AI weekend activity planner">
+    <title>Weekendia | Intelligent AI Weekend Planner</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body data-theme="dark">
+    <a class="skip-link" href="#planner">Skip to the planning form</a>
+
+    <div class="page-loader" id="pageLoader" aria-hidden="true">
+        <div class="loader-core">
+            <span class="loader-orbit loader-orbit-one"></span>
+            <span class="loader-orbit loader-orbit-two"></span>
+            <span class="loader-dot"></span>
+        </div>
+        <p>Preparing your weekend...</p>
+    </div>
+
+    <div class="ambient-scene" aria-hidden="true">
+        <div class="ambient-noise"></div>
+        <div class="ambient-grid"></div>
+        <div class="aurora aurora-one"></div>
+        <div class="aurora aurora-two"></div>
+        <div class="aurora aurora-three"></div>
+        <div class="star-field" id="starField"></div>
+        <div class="mouse-light"></div>
+    </div>
+
+    <header class="site-header shell" data-reveal>
+        <a class="brand" href="#top" aria-label="Weekendia - Home">
+            <span class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 48 48" role="img">
+                    <path d="M11 16.5 24 8l13 8.5v15L24 40l-13-8.5Z"/>
+                    <path d="m17 20 7-4.5L31 20v8l-7 4.5L17 28Z"/>
+                    <circle cx="34.5" cy="12.5" r="3.5"/>
+                </svg>
+            </span>
+            <span class="brand-copy">
+                <strong>WEEKENDIA</strong>
+                <small>AI WEEKEND PLANNER</small>
+            </span>
+        </a>
+
+        <nav class="header-actions" aria-label="Page controls">
+            <div class="system-status" id="systemStatus" role="status" aria-live="polite">
+                <span class="status-pulse"></span>
+                <span id="statusText">Checking connection</span>
+            </div>
+            <button class="icon-button magnetic" id="themeToggle" type="button" aria-label="Change theme" aria-pressed="false">
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20.2 15.1A8.4 8.4 0 0 1 8.9 3.8 8.4 8.4 0 1 0 20.2 15Z"/>
+                </svg>
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="3.5"/>
+                    <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+                </svg>
+            </button>
+        </nav>
+    </header>
+
+    <main id="top">
+        <section class="hero shell">
+            <div class="hero-copy" data-reveal>
+                <div class="eyebrow">
+                    <span class="eyebrow-icon" aria-hidden="true">✦</span>
+                    Personalized planning, powered by AI
+                    <span class="eyebrow-line"></span>
+                </div>
+
+                <h1>
+                    Plan your weekend
+                    <span class="gradient-text">before it even begins.</span>
+                </h1>
+
+                <p class="hero-description">
+                    Share your interests, budget, availability, and weather. Weekendia turns them into a practical,
+                    personalized plan in moments.
+                </p>
+
+                <div class="hero-cta-row">
+                    <a class="primary-link magnetic ripple-host" href="#planner">
+                        <span>Build my plan</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M5 12h14M13 6l6 6-6 6"/>
+                        </svg>
+                    </a>
+                    <button class="text-link" id="viewDemoButton" type="button">
+                        <span class="play-dot" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><path d="m9 7 8 5-8 5Z"/></svg>
+                        </span>
+                        See how it works
+                    </button>
+                </div>
+
+                <div class="trust-row" aria-label="Planning benefits">
+                    <div class="trust-item">
+                        <strong>8</strong>
+                        <span>planning signals</span>
+                    </div>
+                    <span class="trust-separator"></span>
+                    <div class="trust-item">
+                        <strong>100%</strong>
+                        <span>budget-aware</span>
+                    </div>
+                    <span class="trust-separator"></span>
+                    <div class="trust-item">
+                        <strong>AI</strong>
+                        <span>actionable itinerary</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual" data-reveal data-reveal-delay="140">
+                <div class="visual-halo"></div>
+                <div class="orbit orbit-one"><span></span></div>
+                <div class="orbit orbit-two"><span></span></div>
+                <div class="orbit orbit-three"><span></span></div>
+
+                <article class="preview-card tilt-card" data-tilt-strength="7" aria-label="Sample weekend plan">
+                    <div class="preview-shine"></div>
+                    <header class="preview-header">
+                        <div>
+                            <span class="preview-kicker">YOUR SUGGESTED PLAN</span>
+                            <h2>A Saturday with a twist</h2>
+                        </div>
+                        <span class="preview-weather" aria-label="Partly cloudy weather">
+                            <svg viewBox="0 0 32 32" aria-hidden="true">
+                                <circle cx="12" cy="11" r="5"/>
+                                <path d="M9 23h14a5 5 0 0 0 0-10 7 7 0 0 0-13-1A5.5 5.5 0 0 0 9 23Z"/>
+                            </svg>
+                            18°
+                        </span>
+                    </header>
+
+                    <div class="preview-route">
+                        <span class="route-line"></span>
+                        <div class="route-stop is-active">
+                            <span class="route-time">1:00 PM</span>
+                            <div class="route-icon route-icon-camera">
+                                <svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4Z"/><circle cx="12" cy="13" r="3.2"/></svg>
+                            </div>
+                            <div>
+                                <strong>Photo walk</strong>
+                                <small>A calm, energizing start</small>
+                            </div>
+                        </div>
+                        <div class="route-stop">
+                            <span class="route-time">2:15 PM</span>
+                            <div class="route-icon route-icon-coffee">
+                                <svg viewBox="0 0 24 24"><path d="M5 8h11v7a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 10h2a2.5 2.5 0 0 1 0 5h-2M8 4v2M12 4v2"/></svg>
+                            </div>
+                            <div>
+                                <strong>Cozy nearby cafe</strong>
+                                <small>Pause, recharge, and reflect</small>
+                            </div>
+                        </div>
+                        <div class="route-stop">
+                            <span class="route-time">3:00 PM</span>
+                            <div class="route-icon route-icon-spark">
+                                <svg viewBox="0 0 24 24"><path d="m12 3 1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6Z"/></svg>
+                            </div>
+                            <div>
+                                <strong>Flexible finish</strong>
+                                <small>Adapt it to your energy</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer class="preview-footer">
+                        <div class="preview-budget">
+                            <span>Suggested budget</span>
+                            <strong>Under $90</strong>
+                        </div>
+                        <span class="match-pill">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>
+                            High match
+                        </span>
+                    </footer>
+                </article>
+
+                <div class="floating-tag floating-tag-location">
+                    <span class="floating-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/></svg>
+                    </span>
+                    <span><small>Location</small><strong>Near you</strong></span>
+                </div>
+
+                <div class="floating-tag floating-tag-ai">
+                    <span class="ai-spark">✦</span>
+                    <span><small>Smart analysis</small><strong>In moments</strong></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="experience-strip shell" data-reveal aria-label="Planning process">
+            <div class="experience-item">
+                <span class="experience-number">01</span>
+                <div><strong>You share</strong><small>Interests, time, and constraints</small></div>
+            </div>
+            <span class="experience-arrow" aria-hidden="true">
+                <svg viewBox="0 0 60 18"><path d="M2 9h53M47 2l8 7-8 7"/></svg>
+            </span>
+            <div class="experience-item">
+                <span class="experience-number">02</span>
+                <div><strong>AI balances</strong><small>Experience, budget, and logistics</small></div>
+            </div>
+            <span class="experience-arrow" aria-hidden="true">
+                <svg viewBox="0 0 60 18"><path d="M2 9h53M47 2l8 7-8 7"/></svg>
+            </span>
+            <div class="experience-item">
+                <span class="experience-number">03</span>
+                <div><strong>You enjoy</strong><small>A clear, practical itinerary</small></div>
+            </div>
+        </section>
+
+        <section class="planner-section shell" id="planner">
+            <div class="section-heading" data-reveal>
+                <div>
+                    <span class="section-kicker">LET'S DESIGN YOUR WEEKEND</span>
+                    <h2>A few details. One thoughtfully planned weekend.</h2>
+                </div>
+                <p>The more realistic your details are, the more useful and personal your final plan will be.</p>
+            </div>
+
+            <div class="planner-shell" data-reveal data-reveal-delay="100">
+                <div class="planner-glow" aria-hidden="true"></div>
+
+                <form class="planner-form" id="plannerForm" novalidate>
+                    <div class="form-intro">
+                        <div class="form-step-badge">
+                            <span>01</span>
+                            <i></i>
+                        </div>
+                        <div>
+                            <h3>Tell us what your ideal weekend looks like</h3>
+                            <p>Fields marked with an asterisk are required.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="field-group">
+                            <label for="location">City or area <span>*</span></label>
+                            <div class="input-shell">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/></svg>
+                                </span>
+                                <input id="location" name="location" type="text" maxlength="120" autocomplete="address-level2" placeholder="For example, Berlin or London" required>
+                                <span class="field-focus"></span>
+                            </div>
+                            <small class="field-error" data-error-for="location"></small>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="budget">Total budget <span>*</span></label>
+                            <div class="input-shell">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 11h5M7 6V4h10v2"/><circle cx="16" cy="12.5" r="1"/></svg>
+                                </span>
+                                <input id="budget" name="budget" type="text" maxlength="100" inputmode="text" placeholder="For example, $90 or €80" required>
+                                <span class="field-focus"></span>
+                            </div>
+                            <small class="field-error" data-error-for="budget"></small>
+                        </div>
+
+                        <div class="field-group field-group-wide">
+                            <div class="label-row">
+                                <label for="interests">Your interests <span>*</span></label>
+                                <small>You can select more than one</small>
+                            </div>
+                            <div class="input-shell">
+                                <span class="input-icon input-icon-top">
+                                    <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg>
+                                </span>
+                                <textarea id="interests" name="interests" maxlength="300" rows="2" placeholder="For example, sports, nature, cafes, music, and photography" required></textarea>
+                                <span class="field-focus"></span>
+                            </div>
+                            <div class="interest-chips" aria-label="Quick interest suggestions">
+                                <button type="button" class="choice-chip" data-interest="Nature">Nature</button>
+                                <button type="button" class="choice-chip" data-interest="Cafes">Cafes</button>
+                                <button type="button" class="choice-chip" data-interest="Sports">Sports</button>
+                                <button type="button" class="choice-chip" data-interest="Photography">Photography</button>
+                                <button type="button" class="choice-chip" data-interest="Music">Music</button>
+                                <button type="button" class="choice-chip" data-interest="Games and entertainment">Games</button>
+                            </div>
+                            <small class="field-error" data-error-for="interests"></small>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="groupSize">Group size <span>*</span></label>
+                            <div class="input-shell">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 20v-2.2A4.8 4.8 0 0 1 8.3 13h1.4a4.8 4.8 0 0 1 4.8 4.8V20M16 5.5a3 3 0 0 1 0 5.8M17.5 13a4.5 4.5 0 0 1 3 4.3V20"/></svg>
+                                </span>
+                                <input id="groupSize" name="group_size" type="number" min="1" max="50" inputmode="numeric" placeholder="For example, 1" required>
+                                <span class="input-suffix">people</span>
+                                <span class="field-focus"></span>
+                            </div>
+                            <small class="field-error" data-error-for="group_size"></small>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="weather">Weather <span>*</span></label>
+                            <div class="input-shell">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 1 0-.6-8A6 6 0 0 0 5 12a3 3 0 0 0 2 6Z"/><path d="M8 4V2M4.5 6 3 4.5M11.5 6 13 4.5"/></svg>
+                                </span>
+                                <input id="weather" name="weather" type="text" maxlength="160" placeholder="For example, cool with a chance of rain" required>
+                                <span class="field-focus"></span>
+                            </div>
+                            <small class="field-error" data-error-for="weather"></small>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="availableTime">Available time <span>*</span></label>
+                            <div class="input-shell">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+                                </span>
+                                <input id="availableTime" name="available_time" type="text" maxlength="180" placeholder="For example, Saturday from 1 PM to 6 PM" required>
+                                <span class="field-focus"></span>
+                            </div>
+                            <small class="field-error" data-error-for="available_time"></small>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="transport">Transportation <span>*</span></label>
+                            <div class="input-shell select-shell">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="12" rx="3"/><path d="M7 17v2M17 17v2M4 11h16M8 8h8"/><circle cx="8" cy="14" r="1"/><circle cx="16" cy="14" r="1"/></svg>
+                                </span>
+                                <select id="transport" name="transport" required>
+                                    <option value="" selected disabled>Select transportation</option>
+                                    <option value="Walking">Walking</option>
+                                    <option value="Public transit">Public transit</option>
+                                    <option value="Personal car">Personal car</option>
+                                    <option value="Bicycle">Bicycle</option>
+                                    <option value="Taxi or ride-hailing">Taxi or ride-hailing</option>
+                                    <option value="Flexible mix">Flexible mix</option>
+                                </select>
+                                <span class="select-arrow" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg>
+                                </span>
+                                <span class="field-focus"></span>
+                            </div>
+                            <small class="field-error" data-error-for="transport"></small>
+                        </div>
+
+                        <div class="field-group field-group-wide">
+                            <div class="label-row">
+                                <label for="constraints">Additional constraints or preferences</label>
+                                <small><span id="constraintCount">0</span>/500</small>
+                            </div>
+                            <div class="input-shell">
+                                <span class="input-icon input-icon-top">
+                                    <svg viewBox="0 0 24 24"><path d="M12 3 4 7v5c0 4.6 3.2 7.7 8 9 4.8-1.3 8-4.4 8-9V7Z"/><path d="m9 12 2 2 4-4"/></svg>
+                                </span>
+                                <textarea id="constraints" name="constraints" maxlength="500" rows="3" placeholder="For example, avoid intense exercise, stairs, or crowded places"></textarea>
+                                <span class="field-focus"></span>
+                            </div>
+                            <small class="field-error" data-error-for="constraints"></small>
+                        </div>
+                    </div>
+
+                    <div class="form-submit-row">
+                        <div class="privacy-note">
+                            <span class="privacy-icon">
+                                <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2"/></svg>
+                            </span>
+                            <span><strong>Secure and private</strong><small>Your API key stays on the Python server.</small></span>
+                        </div>
+
+                        <button class="submit-button magnetic ripple-host" id="submitButton" type="submit">
+                            <span class="submit-label">Build my weekend plan</span>
+                            <span class="submit-loader" aria-hidden="true"></span>
+                            <span class="submit-icon">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                            </span>
+                        </button>
+                    </div>
+
+                    <p class="keyboard-hint">
+                        Keyboard shortcut: <kbd>Ctrl</kbd> + <kbd>Enter</kbd>
+                    </p>
+                </form>
+
+                <aside class="planner-insight" aria-label="Form summary">
+                    <div class="insight-orb" aria-hidden="true">
+                        <span class="insight-ring insight-ring-one"></span>
+                        <span class="insight-ring insight-ring-two"></span>
+                        <span class="insight-core">✦</span>
+                    </div>
+
+                    <span class="insight-kicker">LIVE BRIEF</span>
+                    <h3>Your plan at a glance</h3>
+                    <p>Your plan summary updates here as you complete the form.</p>
+
+                    <div class="live-summary">
+                        <div class="summary-row">
+                            <span class="summary-icon"><svg viewBox="0 0 24 24"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/></svg></span>
+                            <span><small>Location</small><strong id="summaryLocation">Not selected yet</strong></span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-icon"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 11h5"/></svg></span>
+                            <span><small>Budget</small><strong id="summaryBudget">Flexible</strong></span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 20v-2.2A4.8 4.8 0 0 1 8.3 13h1.4a4.8 4.8 0 0 1 4.8 4.8V20M16 5.5a3 3 0 0 1 0 5.8M17.5 13a4.5 4.5 0 0 1 3 4.3V20"/></svg></span>
+                            <span><small>Group</small><strong id="summaryGroup">Not specified</strong></span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-icon"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 1 0-.6-8A6 6 0 0 0 5 12a3 3 0 0 0 2 6Z"/></svg></span>
+                            <span><small>Weather</small><strong id="summaryWeather">Waiting for details</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="insight-message">
+                        <span>“</span>
+                        <p>The best plan is not the busiest one. It is the one that genuinely fits you.</p>
+                    </div>
+
+                    <div class="model-chip">
+                        <span class="model-dot"></span>
+                        <span>Active model</span>
+                        <strong>{{ model_name }}</strong>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <section class="loading-panel shell" id="loadingPanel" hidden aria-live="polite" aria-busy="true">
+            <div class="loading-card">
+                <div class="loading-visual" aria-hidden="true">
+                    <div class="progress-orbit progress-orbit-one"></div>
+                    <div class="progress-orbit progress-orbit-two"></div>
+                    <div class="progress-ring" id="progressRing">
+                        <span id="progressValue">0%</span>
+                    </div>
+                    <span class="loading-spark loading-spark-one">✦</span>
+                    <span class="loading-spark loading-spark-two">✦</span>
+                    <span class="loading-spark loading-spark-three">✦</span>
+                </div>
+                <span class="loading-kicker">WEEKENDIA IS THINKING</span>
+                <h2 id="loadingTitle">Reading your preferences...</h2>
+                <p id="loadingDescription">We are connecting the details to build a balanced, practical plan.</p>
+                <div class="loading-track"><span id="loadingBar"></span></div>
+                <div class="loading-steps" aria-hidden="true">
+                    <span class="is-active">Preferences</span>
+                    <span>Fit</span>
+                    <span>Timing</span>
+                    <span>Final plan</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="result-section shell" id="resultSection" hidden>
+            <div class="result-header" data-reveal>
+                <div>
+                    <span class="result-kicker"><i></i> PLAN READY</span>
+                    <h2>Your personalized weekend</h2>
+                    <p id="resultSubtitle">A practical AI plan tailored to your choices.</p>
+                </div>
+                <div class="result-actions">
+                    <button class="secondary-button magnetic" id="copyButton" type="button">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
+                        Copy
+                    </button>
+                    <button class="secondary-button magnetic" id="downloadButton" type="button">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>
+                        Save text
+                    </button>
+                    <button class="secondary-button secondary-button-accent magnetic" id="newPlanButton" type="button">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v6h-6"/></svg>
+                        New plan
+                    </button>
+                </div>
+            </div>
+
+            <article class="result-card" data-reveal data-reveal-delay="80">
+                <div class="result-card-topline"></div>
+                <div class="result-meta" id="resultMeta"></div>
+                <div class="result-content" id="resultContent"></div>
+                <footer class="result-footer">
+                    <span class="result-footer-icon">✦</span>
+                    <p>Before leaving, verify opening hours, reservations, prices, and live conditions.</p>
+                </footer>
+            </article>
+        </section>
+
+        <section class="demo-section shell" id="demoSection" hidden>
+            <div class="demo-card">
+                <button class="demo-close" id="demoClose" type="button" aria-label="Close demo">
+                    <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
+                </button>
+                <span class="demo-kicker">HOW IT WORKS</span>
+                <h2>From a short form to a plan you can actually follow</h2>
+                <div class="demo-flow">
+                    <div><span>1</span><strong>Simple input</strong><small>City, budget, time, and interests</small></div>
+                    <i></i>
+                    <div><span>2</span><strong>Multi-factor analysis</strong><small>Weather, transportation, and constraints</small></div>
+                    <i></i>
+                    <div><span>3</span><strong>Practical output</strong><small>Ranked ideas and a clear itinerary</small></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer shell">
+        <div class="footer-brand">
+            <span class="brand-mark brand-mark-small" aria-hidden="true">
+                <svg viewBox="0 0 48 48"><path d="M11 16.5 24 8l13 8.5v15L24 40l-13-8.5Z"/><path d="m17 20 7-4.5L31 20v8l-7 4.5L17 28Z"/></svg>
+            </span>
+            <div><strong>Weekendia</strong><small>For weekends worth remembering.</small></div>
+        </div>
+        <p>Built with Python, Flask, and OpenAI</p>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
+        <span class="toast-icon">
+            <svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>
+        </span>
+        <span id="toastMessage">Done.</span>
+    </div>
+
+    <noscript>
+        <div class="noscript-message">Enable JavaScript in your browser to use the intelligent planning form.</div>
+    </noscript>
+</body>
+</html>
