@@ -17,7 +17,7 @@ If origin or permission is uncertain, stop and record the question instead of ad
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-python -m pip install -r requirements-dev.txt
+python -m pip install -r requirements.lock -r requirements-dev.txt
 $env:WEEKENDIA_MODE = "demo"
 python main.py
 ```

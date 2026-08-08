@@ -36,7 +36,7 @@ jobs:
           node-version: "22"
 
       - name: Install exact runtime and development dependencies
-        run: python -m pip install -r requirements-dev.txt
+        run: python -m pip install -r requirements.lock -r requirements-dev.txt
 
       - name: Lint Python
         run: python -m ruff check .

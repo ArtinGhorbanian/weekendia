@@ -126,7 +126,7 @@ Process-level variables take precedence over an optional `.env` file.
 Install the development tools and run the local quality gates:
 
 ```powershell
-python -m pip install -r requirements-dev.txt
+python -m pip install -r requirements.lock -r requirements-dev.txt
 python -m unittest discover -s tests -v
 python -m compileall -q main.py weekendia tests
 python -m ruff check .
