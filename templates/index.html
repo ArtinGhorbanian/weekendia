@@ -4,23 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#07101d">
-    <meta name="description" content="Weekendia, an intelligent 3D AI weekend activity planner">
-    <title>Weekendia | Intelligent AI Weekend Planner</title>
+    <meta name="description" content="Weekendia turns your weekend preferences into a structured activity plan using the configured planner mode.">
+    <title>Weekendia | Weekend Activity Planner</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 <body data-theme="dark">
+    <script src="{{ url_for('static', filename='theme-init.js') }}"></script>
     <a class="skip-link" href="#planner">Skip to the planning form</a>
-
-    <div class="page-loader" id="pageLoader" aria-hidden="true">
-        <div class="loader-core">
-            <span class="loader-orbit loader-orbit-one"></span>
-            <span class="loader-orbit loader-orbit-two"></span>
-            <span class="loader-dot"></span>
-        </div>
-        <p>Preparing your weekend...</p>
-    </div>
 
     <div class="ambient-scene" aria-hidden="true">
         <div class="ambient-noise"></div>
@@ -43,7 +35,7 @@
             </span>
             <span class="brand-copy">
                 <strong>WEEKENDIA</strong>
-                <small>AI WEEKEND PLANNER</small>
+                <small>WEEKEND PLANNER</small>
             </span>
         </a>
 
@@ -52,7 +44,7 @@
                 <span class="status-pulse"></span>
                 <span id="statusText">Checking connection</span>
             </div>
-            <button class="icon-button magnetic" id="themeToggle" type="button" aria-label="Change theme" aria-pressed="false">
+            <button class="icon-button magnetic" id="themeToggle" type="button" aria-label="Change theme">
                 <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M20.2 15.1A8.4 8.4 0 0 1 8.9 3.8 8.4 8.4 0 1 0 20.2 15Z"/>
                 </svg>
@@ -69,7 +61,7 @@
             <div class="hero-copy" data-reveal>
                 <div class="eyebrow">
                     <span class="eyebrow-icon" aria-hidden="true">✦</span>
-                    Personalized planning, powered by AI
+                    Personalized weekend planning
                     <span class="eyebrow-line"></span>
                 </div>
 
@@ -79,8 +71,8 @@
                 </h1>
 
                 <p class="hero-description">
-                    Share your interests, budget, availability, and weather. Weekendia turns them into a practical,
-                    personalized plan in moments.
+                    Share your interests, budget, availability, and weather. Weekendia uses the configured planner
+                    mode to create a structured plan for you to review.
                 </p>
 
                 <div class="hero-cta-row">
@@ -90,7 +82,7 @@
                             <path d="M5 12h14M13 6l6 6-6 6"/>
                         </svg>
                     </a>
-                    <button class="text-link" id="viewDemoButton" type="button">
+                    <button class="text-link" id="viewDemoButton" type="button" aria-expanded="false" aria-controls="demoSection">
                         <span class="play-dot" aria-hidden="true">
                             <svg viewBox="0 0 24 24"><path d="m9 7 8 5-8 5Z"/></svg>
                         </span>
@@ -98,20 +90,20 @@
                     </button>
                 </div>
 
-                <div class="trust-row" aria-label="Planning benefits">
+                <div class="trust-row" aria-label="Planner inputs and output">
                     <div class="trust-item">
-                        <strong>8</strong>
-                        <span>planning signals</span>
+                        <strong>Your brief</strong>
+                        <span>preferences and constraints</span>
                     </div>
                     <span class="trust-separator"></span>
                     <div class="trust-item">
-                        <strong>100%</strong>
-                        <span>budget-aware</span>
+                        <strong>Your budget</strong>
+                        <span>included as context</span>
                     </div>
                     <span class="trust-separator"></span>
                     <div class="trust-item">
-                        <strong>AI</strong>
-                        <span>actionable itinerary</span>
+                        <strong>Plan output</strong>
+                        <span>structured for review</span>
                     </div>
                 </div>
             </div>
@@ -179,7 +171,7 @@
                         </div>
                         <span class="match-pill">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>
-                            High match
+                            Example layout
                         </span>
                     </footer>
                 </article>
@@ -193,7 +185,7 @@
 
                 <div class="floating-tag floating-tag-ai">
                     <span class="ai-spark">✦</span>
-                    <span><small>Smart analysis</small><strong>In moments</strong></span>
+                    <span><small>Planner mode</small><strong>Configurable</strong></span>
                 </div>
             </div>
         </section>
@@ -208,7 +200,7 @@
             </span>
             <div class="experience-item">
                 <span class="experience-number">02</span>
-                <div><strong>AI balances</strong><small>Experience, budget, and logistics</small></div>
+                <div><strong>Planner processes</strong><small>The brief in its configured mode</small></div>
             </div>
             <span class="experience-arrow" aria-hidden="true">
                 <svg viewBox="0 0 60 18"><path d="M2 9h53M47 2l8 7-8 7"/></svg>
@@ -219,7 +211,7 @@
             </div>
         </section>
 
-        <section class="planner-section shell" id="planner">
+        <section class="planner-section shell" id="planner" tabindex="-1">
             <div class="section-heading" data-reveal>
                 <div>
                     <span class="section-kicker">LET'S DESIGN YOUR WEEKEND</span>
@@ -250,10 +242,10 @@
                                 <span class="input-icon">
                                     <svg viewBox="0 0 24 24"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/></svg>
                                 </span>
-                                <input id="location" name="location" type="text" maxlength="120" autocomplete="address-level2" placeholder="For example, Berlin or London" required>
+                                <input id="location" name="location" type="text" maxlength="120" autocomplete="address-level2" placeholder="For example, Berlin or London" aria-describedby="locationError" aria-errormessage="locationError" required>
                                 <span class="field-focus"></span>
                             </div>
-                            <small class="field-error" data-error-for="location"></small>
+                            <small class="field-error" id="locationError" data-error-for="location"></small>
                         </div>
 
                         <div class="field-group">
@@ -262,33 +254,33 @@
                                 <span class="input-icon">
                                     <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 11h5M7 6V4h10v2"/><circle cx="16" cy="12.5" r="1"/></svg>
                                 </span>
-                                <input id="budget" name="budget" type="text" maxlength="100" inputmode="text" placeholder="For example, $90 or €80" required>
+                                <input id="budget" name="budget" type="text" maxlength="100" inputmode="text" placeholder="For example, $90 or €80" aria-describedby="budgetError" aria-errormessage="budgetError" required>
                                 <span class="field-focus"></span>
                             </div>
-                            <small class="field-error" data-error-for="budget"></small>
+                            <small class="field-error" id="budgetError" data-error-for="budget"></small>
                         </div>
 
                         <div class="field-group field-group-wide">
                             <div class="label-row">
                                 <label for="interests">Your interests <span>*</span></label>
-                                <small>You can select more than one</small>
+                                <small id="interestsHint">You can select more than one</small>
                             </div>
                             <div class="input-shell">
                                 <span class="input-icon input-icon-top">
                                     <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg>
                                 </span>
-                                <textarea id="interests" name="interests" maxlength="300" rows="2" placeholder="For example, sports, nature, cafes, music, and photography" required></textarea>
+                                <textarea id="interests" name="interests" maxlength="300" rows="2" placeholder="For example, sports, nature, cafes, music, and photography" aria-describedby="interestsHint interestsError" aria-errormessage="interestsError" required></textarea>
                                 <span class="field-focus"></span>
                             </div>
                             <div class="interest-chips" aria-label="Quick interest suggestions">
-                                <button type="button" class="choice-chip" data-interest="Nature">Nature</button>
-                                <button type="button" class="choice-chip" data-interest="Cafes">Cafes</button>
-                                <button type="button" class="choice-chip" data-interest="Sports">Sports</button>
-                                <button type="button" class="choice-chip" data-interest="Photography">Photography</button>
-                                <button type="button" class="choice-chip" data-interest="Music">Music</button>
-                                <button type="button" class="choice-chip" data-interest="Games and entertainment">Games</button>
+                                <button type="button" class="choice-chip" data-interest="Nature" aria-pressed="false">Nature</button>
+                                <button type="button" class="choice-chip" data-interest="Cafes" aria-pressed="false">Cafes</button>
+                                <button type="button" class="choice-chip" data-interest="Sports" aria-pressed="false">Sports</button>
+                                <button type="button" class="choice-chip" data-interest="Photography" aria-pressed="false">Photography</button>
+                                <button type="button" class="choice-chip" data-interest="Music" aria-pressed="false">Music</button>
+                                <button type="button" class="choice-chip" data-interest="Games and entertainment" aria-pressed="false">Games</button>
                             </div>
-                            <small class="field-error" data-error-for="interests"></small>
+                            <small class="field-error" id="interestsError" data-error-for="interests"></small>
                         </div>
 
                         <div class="field-group">
@@ -297,11 +289,11 @@
                                 <span class="input-icon">
                                     <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 20v-2.2A4.8 4.8 0 0 1 8.3 13h1.4a4.8 4.8 0 0 1 4.8 4.8V20M16 5.5a3 3 0 0 1 0 5.8M17.5 13a4.5 4.5 0 0 1 3 4.3V20"/></svg>
                                 </span>
-                                <input id="groupSize" name="group_size" type="number" min="1" max="50" inputmode="numeric" placeholder="For example, 1" required>
+                                <input id="groupSize" name="group_size" type="number" min="1" max="50" inputmode="numeric" placeholder="For example, 1" aria-describedby="groupSizeError" aria-errormessage="groupSizeError" required>
                                 <span class="input-suffix">people</span>
                                 <span class="field-focus"></span>
                             </div>
-                            <small class="field-error" data-error-for="group_size"></small>
+                            <small class="field-error" id="groupSizeError" data-error-for="group_size"></small>
                         </div>
 
                         <div class="field-group">
@@ -310,10 +302,10 @@
                                 <span class="input-icon">
                                     <svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 1 0-.6-8A6 6 0 0 0 5 12a3 3 0 0 0 2 6Z"/><path d="M8 4V2M4.5 6 3 4.5M11.5 6 13 4.5"/></svg>
                                 </span>
-                                <input id="weather" name="weather" type="text" maxlength="160" placeholder="For example, cool with a chance of rain" required>
+                                <input id="weather" name="weather" type="text" maxlength="160" placeholder="For example, cool with a chance of rain" aria-describedby="weatherError" aria-errormessage="weatherError" required>
                                 <span class="field-focus"></span>
                             </div>
-                            <small class="field-error" data-error-for="weather"></small>
+                            <small class="field-error" id="weatherError" data-error-for="weather"></small>
                         </div>
 
                         <div class="field-group">
@@ -322,10 +314,10 @@
                                 <span class="input-icon">
                                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
                                 </span>
-                                <input id="availableTime" name="available_time" type="text" maxlength="180" placeholder="For example, Saturday from 1 PM to 6 PM" required>
+                                <input id="availableTime" name="available_time" type="text" maxlength="180" placeholder="For example, Saturday from 1 PM to 6 PM" aria-describedby="availableTimeError" aria-errormessage="availableTimeError" required>
                                 <span class="field-focus"></span>
                             </div>
-                            <small class="field-error" data-error-for="available_time"></small>
+                            <small class="field-error" id="availableTimeError" data-error-for="available_time"></small>
                         </div>
 
                         <div class="field-group">
@@ -334,7 +326,7 @@
                                 <span class="input-icon">
                                     <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="12" rx="3"/><path d="M7 17v2M17 17v2M4 11h16M8 8h8"/><circle cx="8" cy="14" r="1"/><circle cx="16" cy="14" r="1"/></svg>
                                 </span>
-                                <select id="transport" name="transport" required>
+                                <select id="transport" name="transport" aria-describedby="transportError" aria-errormessage="transportError" required>
                                     <option value="" selected disabled>Select transportation</option>
                                     <option value="Walking">Walking</option>
                                     <option value="Public transit">Public transit</option>
@@ -348,31 +340,31 @@
                                 </span>
                                 <span class="field-focus"></span>
                             </div>
-                            <small class="field-error" data-error-for="transport"></small>
+                            <small class="field-error" id="transportError" data-error-for="transport"></small>
                         </div>
 
                         <div class="field-group field-group-wide">
                             <div class="label-row">
                                 <label for="constraints">Additional constraints or preferences</label>
-                                <small><span id="constraintCount">0</span>/500</small>
+                                <small id="constraintsHint"><span id="constraintCount">0</span>/500 characters</small>
                             </div>
                             <div class="input-shell">
                                 <span class="input-icon input-icon-top">
                                     <svg viewBox="0 0 24 24"><path d="M12 3 4 7v5c0 4.6 3.2 7.7 8 9 4.8-1.3 8-4.4 8-9V7Z"/><path d="m9 12 2 2 4-4"/></svg>
                                 </span>
-                                <textarea id="constraints" name="constraints" maxlength="500" rows="3" placeholder="For example, avoid intense exercise, stairs, or crowded places"></textarea>
+                                <textarea id="constraints" name="constraints" maxlength="500" rows="3" placeholder="For example, avoid intense exercise, stairs, or crowded places" aria-describedby="constraintsHint constraintsError privacyDisclosure" aria-errormessage="constraintsError"></textarea>
                                 <span class="field-focus"></span>
                             </div>
-                            <small class="field-error" data-error-for="constraints"></small>
+                            <small class="field-error" id="constraintsError" data-error-for="constraints"></small>
                         </div>
                     </div>
 
                     <div class="form-submit-row">
-                        <div class="privacy-note">
+                        <div class="privacy-note" id="privacyDisclosure" role="note">
                             <span class="privacy-icon">
                                 <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2"/></svg>
                             </span>
-                            <span><strong>Secure and private</strong><small>Your API key stays on the Python server.</small></span>
+                            <span><strong>API keys stay on the server</strong><small>External planner mode sends your entries to its provider. Do not enter names, exact addresses, or medical details.</small></span>
                         </div>
 
                         <button class="submit-button magnetic ripple-host" id="submitButton" type="submit">
@@ -424,46 +416,45 @@
                         <p>The best plan is not the busiest one. It is the one that genuinely fits you.</p>
                     </div>
 
-                    <div class="model-chip">
+                    <div class="model-chip" aria-label="Planner mode: {{ planner_mode_label }}">
                         <span class="model-dot"></span>
-                        <span>Active model</span>
-                        <strong>{{ model_name }}</strong>
+                        <span>Planner mode</span>
+                        <strong>{{ planner_mode_label }}</strong>
                     </div>
                 </aside>
             </div>
         </section>
 
-        <section class="loading-panel shell" id="loadingPanel" hidden aria-live="polite" aria-busy="true">
+        <section class="loading-panel shell" id="loadingPanel" hidden role="status" aria-live="polite" aria-busy="true">
             <div class="loading-card">
                 <div class="loading-visual" aria-hidden="true">
                     <div class="progress-orbit progress-orbit-one"></div>
                     <div class="progress-orbit progress-orbit-two"></div>
                     <div class="progress-ring" id="progressRing">
-                        <span id="progressValue">0%</span>
+                        <span id="progressValue">Working</span>
                     </div>
                     <span class="loading-spark loading-spark-one">✦</span>
                     <span class="loading-spark loading-spark-two">✦</span>
                     <span class="loading-spark loading-spark-three">✦</span>
                 </div>
-                <span class="loading-kicker">WEEKENDIA IS THINKING</span>
-                <h2 id="loadingTitle">Reading your preferences...</h2>
-                <p id="loadingDescription">We are connecting the details to build a balanced, practical plan.</p>
-                <div class="loading-track"><span id="loadingBar"></span></div>
+                <span class="loading-kicker">PLAN REQUEST IN PROGRESS</span>
+                <h2 id="loadingTitle">Waiting for the planner response...</h2>
+                <p id="loadingDescription">Your request is in progress. Weekendia does not verify live prices, venue availability, or travel conditions.</p>
+                <div class="loading-track" aria-hidden="true"><span id="loadingBar"></span></div>
                 <div class="loading-steps" aria-hidden="true">
-                    <span class="is-active">Preferences</span>
-                    <span>Fit</span>
-                    <span>Timing</span>
-                    <span>Final plan</span>
+                    <span class="is-active">Request in progress</span>
+                    <span>Response received</span>
                 </div>
             </div>
         </section>
 
-        <section class="result-section shell" id="resultSection" hidden>
+        <section class="result-section shell" id="resultSection" aria-labelledby="resultHeading" hidden>
+            <p class="sr-only" id="resultAnnouncement" role="status" aria-live="polite" aria-atomic="true"></p>
             <div class="result-header" data-reveal>
                 <div>
                     <span class="result-kicker"><i></i> PLAN READY</span>
-                    <h2>Your personalized weekend</h2>
-                    <p id="resultSubtitle">A practical AI plan tailored to your choices.</p>
+                    <h2 id="resultHeading" tabindex="-1">Your personalized weekend</h2>
+                    <p id="resultSubtitle">A structured plan based on your submitted choices.</p>
                 </div>
                 <div class="result-actions">
                     <button class="secondary-button magnetic" id="copyButton" type="button">
@@ -483,7 +474,7 @@
 
             <article class="result-card" data-reveal data-reveal-delay="80">
                 <div class="result-card-topline"></div>
-                <div class="result-meta" id="resultMeta"></div>
+                <div class="result-meta" id="resultMeta" aria-label="Submitted plan details"></div>
                 <div class="result-content" id="resultContent"></div>
                 <footer class="result-footer">
                     <span class="result-footer-icon">✦</span>
@@ -492,19 +483,19 @@
             </article>
         </section>
 
-        <section class="demo-section shell" id="demoSection" hidden>
+        <section class="demo-section shell" id="demoSection" role="region" aria-labelledby="demoHeading" hidden>
             <div class="demo-card">
-                <button class="demo-close" id="demoClose" type="button" aria-label="Close demo">
-                    <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
-                </button>
                 <span class="demo-kicker">HOW IT WORKS</span>
-                <h2>From a short form to a plan you can actually follow</h2>
+                <h2 id="demoHeading" tabindex="-1">From a short form to a plan you can review</h2>
+                <button class="demo-close" id="demoClose" type="button" aria-label="Close demo">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+                </button>
                 <div class="demo-flow">
                     <div><span>1</span><strong>Simple input</strong><small>City, budget, time, and interests</small></div>
                     <i></i>
-                    <div><span>2</span><strong>Multi-factor analysis</strong><small>Weather, transportation, and constraints</small></div>
+                    <div><span>2</span><strong>Planner request</strong><small>Processed in the configured mode</small></div>
                     <i></i>
-                    <div><span>3</span><strong>Practical output</strong><small>Ranked ideas and a clear itinerary</small></div>
+                    <div><span>3</span><strong>Structured output</strong><small>An itinerary for you to verify and adapt</small></div>
                 </div>
             </div>
         </section>
@@ -517,7 +508,7 @@
             </span>
             <div><strong>Weekendia</strong><small>For weekends worth remembering.</small></div>
         </div>
-        <p>Built with Python, Flask, and OpenAI</p>
+        <p>Maintained under the AIONEX project identity</p>
     </footer>
 
     <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
@@ -528,7 +519,7 @@
     </div>
 
     <noscript>
-        <div class="noscript-message">Enable JavaScript in your browser to use the intelligent planning form.</div>
+        <div class="noscript-message">Enable JavaScript in your browser to use the planning form.</div>
     </noscript>
 </body>
 </html>

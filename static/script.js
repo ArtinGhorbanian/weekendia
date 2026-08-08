@@ -7,13 +7,14 @@
     const dom = {
         body: document.body,
         root: document.documentElement,
-        pageLoader: document.getElementById("pageLoader"),
+        skipLink: document.querySelector(".skip-link"),
         starField: document.getElementById("starField"),
         themeToggle: document.getElementById("themeToggle"),
         themeColor: document.querySelector('meta[name="theme-color"]'),
         systemStatus: document.getElementById("systemStatus"),
         statusText: document.getElementById("statusText"),
         plannerForm: document.getElementById("plannerForm"),
+        plannerSection: document.getElementById("planner"),
         plannerShell: document.querySelector(".planner-shell"),
         submitButton: document.getElementById("submitButton"),
         submitLabel: document.querySelector(".submit-label"),
@@ -25,6 +26,8 @@
         progressRing: document.getElementById("progressRing"),
         progressValue: document.getElementById("progressValue"),
         resultSection: document.getElementById("resultSection"),
+        resultHeading: document.getElementById("resultHeading"),
+        resultAnnouncement: document.getElementById("resultAnnouncement"),
         resultSubtitle: document.getElementById("resultSubtitle"),
         resultMeta: document.getElementById("resultMeta"),
         resultContent: document.getElementById("resultContent"),
@@ -40,6 +43,7 @@
         choiceChips: Array.from(document.querySelectorAll(".choice-chip")),
         viewDemoButton: document.getElementById("viewDemoButton"),
         demoSection: document.getElementById("demoSection"),
+        demoHeading: document.getElementById("demoHeading"),
         demoClose: document.getElementById("demoClose"),
         summaryLocation: document.getElementById("summaryLocation"),
         summaryBudget: document.getElementById("summaryBudget"),
@@ -63,51 +67,21 @@
         currentMeta: null,
         isSubmitting: false,
         toastTimer: null,
-        loadingTimer: null,
-        loadingProgress: 0,
         pointerFrame: null,
         configReady: null,
+        health: null,
+        demoReturnFocus: null,
     };
-
-    const loadingPhases = [
-        {
-            progress: 8,
-            title: "Reading your preferences...",
-            description: "We are connecting your interests, location, budget, and constraints.",
-        },
-        {
-            progress: 30,
-            title: "Comparing the best-fit experiences...",
-            description: "We are finding options that fit your time, weather, and transportation.",
-        },
-        {
-            progress: 54,
-            title: "Balancing budget and time...",
-            description: "Costs and durations are being checked to keep the plan practical.",
-        },
-        {
-            progress: 76,
-            title: "Building your final itinerary...",
-            description: "Recommendations are being ranked and arranged into a clear schedule.",
-        },
-        {
-            progress: 91,
-            title: "Polishing the final details...",
-            description: "A backup option and before-you-go checklist are being added.",
-        },
-    ];
 
     const icons = {
         location: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/></svg>',
         budget: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 11h5"/></svg>',
         group: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 20v-2.2A4.8 4.8 0 0 1 8.3 13h1.4a4.8 4.8 0 0 1 4.8 4.8V20M16 5.5a3 3 0 0 1 0 5.8M17.5 13a4.5 4.5 0 0 1 3 4.3V20"/></svg>',
-        model: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6Z"/></svg>',
         success: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>',
         error: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 17h.01"/></svg>',
     };
 
     function init() {
-        dom.body.classList.add("is-locked");
         createStars();
         initializeTheme();
         initializeRevealAnimations();
@@ -115,30 +89,38 @@
         initializeTiltCards();
         initializeMagneticElements();
         initializeRipples();
+        initializeSkipLink();
         initializeForm();
         initializeResultActions();
         initializeDemo();
         checkHealth();
+        syncInterestChips();
         updateAllSummaries();
         updateConstraintCount();
 
-        window.addEventListener("load", hidePageLoader, { once: true });
-        window.setTimeout(hidePageLoader, 1300);
         window.addEventListener("online", checkHealth);
         window.addEventListener("offline", () => {
-            setSystemStatus("You are offline", "error");
+            setSystemStatus(
+                "Offline",
+                "offline",
+                "You are offline. Existing results remain available, but a new plan needs a connection.",
+            );
         });
     }
 
-    function hidePageLoader() {
-        if (!dom.pageLoader || dom.pageLoader.classList.contains("is-hidden")) {
-            return;
-        }
+    function initializeSkipLink() {
+        dom.skipLink?.addEventListener("click", (event) => {
+            if (!dom.plannerSection) {
+                return;
+            }
 
-        window.setTimeout(() => {
-            dom.pageLoader.classList.add("is-hidden");
-            dom.body.classList.remove("is-locked");
-        }, prefersReducedMotion ? 0 : 320);
+            event.preventDefault();
+            dom.plannerSection.scrollIntoView({
+                behavior: prefersReducedMotion ? "auto" : "smooth",
+                block: "start",
+            });
+            dom.plannerSection.focus({ preventScroll: true });
+        });
     }
 
     // ---------------------------------------------------------------------
@@ -168,7 +150,6 @@
 
     function applyTheme(theme, persist = false) {
         dom.body.dataset.theme = theme;
-        dom.themeToggle?.setAttribute("aria-pressed", String(theme === "light"));
         dom.themeToggle?.setAttribute(
             "aria-label",
             theme === "dark" ? "Switch to light theme" : "Switch to dark theme",
@@ -196,7 +177,7 @@
             return;
         }
 
-        const count = window.innerWidth < 700 ? 42 : 76;
+        const count = window.innerWidth < 480 ? 18 : window.innerWidth < 760 ? 24 : 64;
         const fragment = document.createDocumentFragment();
 
         for (let index = 0; index < count; index += 1) {
@@ -230,13 +211,43 @@
             });
         }, { passive: true });
 
-        dom.plannerShell?.addEventListener("pointermove", (event) => {
-            const rect = dom.plannerShell.getBoundingClientRect();
-            const x = ((event.clientX - rect.left) / rect.width) * 100;
-            const y = ((event.clientY - rect.top) / rect.height) * 100;
-            dom.plannerShell.style.setProperty("--planner-x", `${x.toFixed(2)}%`);
-            dom.plannerShell.style.setProperty("--planner-y", `${y.toFixed(2)}%`);
-        });
+        if (dom.plannerShell) {
+            let plannerBounds = null;
+            let plannerFrame = null;
+            let plannerPoint = null;
+
+            dom.plannerShell.addEventListener("pointerenter", () => {
+                plannerBounds = dom.plannerShell.getBoundingClientRect();
+            });
+
+            dom.plannerShell.addEventListener("pointermove", (event) => {
+                plannerPoint = { x: event.clientX, y: event.clientY };
+                if (plannerFrame) {
+                    return;
+                }
+
+                plannerFrame = window.requestAnimationFrame(() => {
+                    plannerFrame = null;
+                    plannerBounds ||= dom.plannerShell.getBoundingClientRect();
+                    const x = ((plannerPoint.x - plannerBounds.left) / plannerBounds.width) * 100;
+                    const y = ((plannerPoint.y - plannerBounds.top) / plannerBounds.height) * 100;
+                    dom.plannerShell.style.setProperty("--planner-x", `${x.toFixed(2)}%`);
+                    dom.plannerShell.style.setProperty("--planner-y", `${y.toFixed(2)}%`);
+                });
+            });
+
+            dom.plannerShell.addEventListener("pointerleave", () => {
+                plannerBounds = null;
+                if (plannerFrame) {
+                    window.cancelAnimationFrame(plannerFrame);
+                    plannerFrame = null;
+                }
+            });
+
+            window.addEventListener("resize", () => {
+                plannerBounds = null;
+            }, { passive: true });
+        }
     }
 
     // ---------------------------------------------------------------------
@@ -296,21 +307,41 @@
 
         document.querySelectorAll(".tilt-card").forEach((card) => {
             const strength = Number(card.dataset.tiltStrength || 6);
+            let bounds = null;
+            let frame = null;
+            let point = null;
+
+            card.addEventListener("pointerenter", () => {
+                bounds = card.getBoundingClientRect();
+            });
 
             card.addEventListener("pointermove", (event) => {
-                const rect = card.getBoundingClientRect();
-                const normalizedX = (event.clientX - rect.left) / rect.width;
-                const normalizedY = (event.clientY - rect.top) / rect.height;
-                const rotateY = (normalizedX - 0.5) * strength * 2;
-                const rotateX = (0.5 - normalizedY) * strength * 1.45;
+                point = { x: event.clientX, y: event.clientY };
+                if (frame) {
+                    return;
+                }
 
-                card.style.animationPlayState = "paused";
-                card.style.transform = `rotateX(${(rotateX + 4).toFixed(2)}deg) rotateY(${(rotateY - 7).toFixed(2)}deg) translateZ(24px)`;
-                card.style.setProperty("--card-x", `${(normalizedX * 100).toFixed(2)}%`);
-                card.style.setProperty("--card-y", `${(normalizedY * 100).toFixed(2)}%`);
+                frame = window.requestAnimationFrame(() => {
+                    frame = null;
+                    bounds ||= card.getBoundingClientRect();
+                    const normalizedX = (point.x - bounds.left) / bounds.width;
+                    const normalizedY = (point.y - bounds.top) / bounds.height;
+                    const rotateY = (normalizedX - 0.5) * strength * 2;
+                    const rotateX = (0.5 - normalizedY) * strength * 1.45;
+
+                    card.style.animationPlayState = "paused";
+                    card.style.transform = `rotateX(${(rotateX + 4).toFixed(2)}deg) rotateY(${(rotateY - 7).toFixed(2)}deg) translateZ(24px)`;
+                    card.style.setProperty("--card-x", `${(normalizedX * 100).toFixed(2)}%`);
+                    card.style.setProperty("--card-y", `${(normalizedY * 100).toFixed(2)}%`);
+                });
             });
 
             card.addEventListener("pointerleave", () => {
+                bounds = null;
+                if (frame) {
+                    window.cancelAnimationFrame(frame);
+                    frame = null;
+                }
                 card.style.transform = "rotateY(-7deg) rotateX(4deg) translateZ(24px)";
                 window.setTimeout(() => {
                     card.style.animationPlayState = "running";
@@ -325,15 +356,36 @@
         }
 
         document.querySelectorAll(".magnetic").forEach((element) => {
+            let bounds = null;
+            let frame = null;
+            let point = null;
+
+            element.addEventListener("pointerenter", () => {
+                bounds = element.getBoundingClientRect();
+            });
+
             element.addEventListener("pointermove", (event) => {
-                const rect = element.getBoundingClientRect();
-                const x = event.clientX - rect.left - rect.width / 2;
-                const y = event.clientY - rect.top - rect.height / 2;
-                const factor = element.classList.contains("submit-button") ? 0.08 : 0.12;
-                element.style.transform = `translate(${(x * factor).toFixed(2)}px, ${(y * factor).toFixed(2)}px)`;
+                point = { x: event.clientX, y: event.clientY };
+                if (frame) {
+                    return;
+                }
+
+                frame = window.requestAnimationFrame(() => {
+                    frame = null;
+                    bounds ||= element.getBoundingClientRect();
+                    const x = point.x - bounds.left - bounds.width / 2;
+                    const y = point.y - bounds.top - bounds.height / 2;
+                    const factor = element.classList.contains("submit-button") ? 0.08 : 0.12;
+                    element.style.transform = `translate(${(x * factor).toFixed(2)}px, ${(y * factor).toFixed(2)}px)`;
+                });
             });
 
             element.addEventListener("pointerleave", () => {
+                bounds = null;
+                if (frame) {
+                    window.cancelAnimationFrame(frame);
+                    frame = null;
+                }
                 element.style.transform = "";
             });
         });
@@ -426,7 +478,6 @@
 
         dom.interests.value = currentValues.join(", ");
         dom.interests.dispatchEvent(new Event("input", { bubbles: true }));
-        dom.interests.focus({ preventScroll: true });
     }
 
     function parseInterestValues(value) {
@@ -550,7 +601,17 @@
     async function submitPlan(event) {
         event.preventDefault();
 
-        if (state.isSubmitting || !validateForm()) {
+        if (state.isSubmitting) {
+            return;
+        }
+
+        if (state.configReady === false) {
+            showToast("Planner setup is incomplete. Configure a planner mode before submitting.", true, 6200);
+            setSystemStatus("Setup required", "error", "Planner configuration needs attention before a plan can be submitted.");
+            return;
+        }
+
+        if (!validateForm()) {
             return;
         }
 
@@ -559,7 +620,7 @@
         startLoadingExperience();
 
         const controller = new AbortController();
-        const timeoutId = window.setTimeout(() => controller.abort(), 100000);
+        const timeoutId = window.setTimeout(() => controller.abort(), 55_000);
 
         try {
             const response = await fetch("/api/plan", {
@@ -583,13 +644,19 @@
 
             await completeLoadingExperience();
             showResult(data);
-            setSystemStatus("AI is ready", "ready");
+            state.configReady = true;
+            applyHealthStatus();
         } catch (error) {
             stopLoadingExperience();
             dom.loadingPanel.hidden = true;
 
             if (error.name === "AbortError") {
                 showToast("The request took too long. Check your internet connection or proxy and try again.", true, 6200);
+                setSystemStatus(
+                    "Planner delayed",
+                    "degraded",
+                    "The planner request timed out. Your previous result, if any, is still available.",
+                );
             } else {
                 if (error.fields) {
                     Object.entries(error.fields).forEach(([name, message]) => setFieldError(name, String(message)));
@@ -598,7 +665,20 @@
                 showToast(error.message || "An unexpected error occurred.", true, 6200);
 
                 if (["configuration_error", "authentication_error"].includes(error.code)) {
-                    setSystemStatus("API settings need attention", "error");
+                    state.configReady = false;
+                    setSystemStatus("Setup required", "error", "Planner configuration needs attention.");
+                } else if (!navigator.onLine) {
+                    setSystemStatus(
+                        "Offline",
+                        "offline",
+                        "You are offline. Your previous result, if any, is still available.",
+                    );
+                } else if (error instanceof TypeError) {
+                    setSystemStatus(
+                        "Status unavailable",
+                        "degraded",
+                        "The planner could not be reached. Your previous result, if any, is still available.",
+                    );
                 }
             }
 
@@ -664,7 +744,7 @@
         const errorElement = document.querySelector(`[data-error-for="${escapeSelector(name)}"]`);
 
         field?.closest(".input-shell")?.classList.remove("is-invalid");
-        field?.removeAttribute("aria-invalid");
+        field?.setAttribute("aria-invalid", "false");
 
         if (errorElement) {
             errorElement.textContent = "";
@@ -688,83 +768,60 @@
     // ---------------------------------------------------------------------
 
     function startLoadingExperience() {
-        dom.resultSection.hidden = true;
         dom.loadingPanel.hidden = false;
-        state.loadingProgress = 0;
-        setLoadingProgress(0);
-        setLoadingPhase(0);
+        dom.loadingPanel.setAttribute("aria-busy", "true");
+        dom.progressRing?.classList.remove("is-complete");
+
+        if (dom.progressValue) {
+            dom.progressValue.textContent = "Working";
+        }
+
+        if (dom.loadingTitle) {
+            dom.loadingTitle.textContent = "Waiting for the planner response...";
+        }
+
+        if (dom.loadingDescription) {
+            dom.loadingDescription.textContent = "Your request is in progress. Weekendia does not verify live prices, venue availability, or travel conditions.";
+        }
+
+        dom.loadingSteps.forEach((step, index) => {
+            step.classList.toggle("is-active", index === 0);
+            step.classList.remove("is-complete");
+        });
 
         dom.loadingPanel.scrollIntoView({
             behavior: prefersReducedMotion ? "auto" : "smooth",
             block: "center",
         });
-
-        let phaseIndex = 0;
-        state.loadingTimer = window.setInterval(() => {
-            const target = loadingPhases[Math.min(phaseIndex + 1, loadingPhases.length - 1)].progress;
-            const increment = Math.max(1, Math.round(Math.random() * 3));
-            state.loadingProgress = Math.min(state.loadingProgress + increment, 94);
-
-            if (state.loadingProgress >= target && phaseIndex < loadingPhases.length - 1) {
-                phaseIndex += 1;
-                setLoadingPhase(phaseIndex);
-            }
-
-            setLoadingProgress(state.loadingProgress);
-        }, 720);
     }
 
     function stopLoadingExperience() {
-        if (state.loadingTimer) {
-            window.clearInterval(state.loadingTimer);
-            state.loadingTimer = null;
-        }
+        dom.loadingPanel?.setAttribute("aria-busy", "false");
     }
 
     async function completeLoadingExperience() {
         stopLoadingExperience();
-        setLoadingPhase(loadingPhases.length - 1);
-        setLoadingProgress(100);
+        dom.progressRing?.classList.add("is-complete");
 
-        if (!prefersReducedMotion) {
-            await wait(520);
+        if (dom.progressValue) {
+            dom.progressValue.textContent = "Received";
         }
-    }
-
-    function setLoadingPhase(index) {
-        const phase = loadingPhases[index] || loadingPhases[0];
 
         if (dom.loadingTitle) {
-            dom.loadingTitle.textContent = phase.title;
+            dom.loadingTitle.textContent = "Planner response received";
         }
 
         if (dom.loadingDescription) {
-            dom.loadingDescription.textContent = phase.description;
+            dom.loadingDescription.textContent = "Preparing the response for display.";
         }
 
-        dom.loadingSteps.forEach((step, stepIndex) => {
-            step.classList.toggle("is-active", stepIndex === Math.min(index, dom.loadingSteps.length - 1));
-            step.classList.toggle("is-complete", stepIndex < index);
+        dom.loadingSteps.forEach((step) => {
+            step.classList.remove("is-active");
+            step.classList.add("is-complete");
         });
 
-        if (state.loadingProgress < phase.progress) {
-            state.loadingProgress = phase.progress;
-            setLoadingProgress(phase.progress);
-        }
-    }
-
-    function setLoadingProgress(progress) {
-        const safeProgress = Math.max(0, Math.min(100, Math.round(progress)));
-        state.loadingProgress = safeProgress;
-
-        dom.progressRing?.style.setProperty("--progress", `${safeProgress * 3.6}deg`);
-
-        if (dom.progressValue) {
-            dom.progressValue.textContent = `${safeProgress}%`;
-        }
-
-        if (dom.loadingBar) {
-            dom.loadingBar.style.width = `${safeProgress}%`;
+        if (!prefersReducedMotion) {
+            await wait(180);
         }
     }
 
@@ -804,6 +861,11 @@
                 behavior: prefersReducedMotion ? "auto" : "smooth",
                 block: "start",
             });
+            dom.resultHeading?.focus({ preventScroll: true });
+
+            if (dom.resultAnnouncement) {
+                dom.resultAnnouncement.textContent = "Your weekend plan is ready and displayed below.";
+            }
         });
 
         showToast("Your weekend plan is ready.");
@@ -822,6 +884,7 @@
         const lines = normalized.split("\n");
         const output = [];
         let listItems = [];
+        let orderedItems = [];
 
         const flushList = () => {
             if (listItems.length === 0) {
@@ -830,6 +893,22 @@
 
             output.push(`<ul>${listItems.map((item) => `<li>${formatInline(item)}</li>`).join("")}</ul>`);
             listItems = [];
+        };
+
+        const flushOrderedList = () => {
+            if (orderedItems.length === 0) {
+                return;
+            }
+
+            const items = orderedItems.map((item) => {
+                const details = item.details.length > 0
+                    ? `<ul>${item.details.map((detail) => `<li>${formatInline(detail)}</li>`).join("")}</ul>`
+                    : "";
+                return `<li value="${escapeHtml(item.number)}"><div class="result-ordered-title"><span class="result-number" aria-hidden="true">${escapeHtml(item.number)}</span><span>${formatInline(item.title)}</span></div>${details}</li>`;
+            }).join("");
+
+            output.push(`<ol class="result-ordered-list" role="list">${items}</ol>`);
+            orderedItems = [];
         };
 
         lines.forEach((rawLine) => {
@@ -842,6 +921,7 @@
 
             if (/^[-_*]{3,}$/.test(line)) {
                 flushList();
+                flushOrderedList();
                 output.push('<div class="result-divider"></div>');
                 return;
             }
@@ -849,41 +929,57 @@
             const markdownHeading = line.match(/^#{1,4}\s+(.+)$/);
             if (markdownHeading) {
                 flushList();
-                output.push(buildHeading(markdownHeading[1]));
+                flushOrderedList();
+                const numberedSection = markdownHeading[1].match(/^(\d+)[.)-]?\s+(.+)$/);
+                output.push(numberedSection
+                    ? buildHeading(numberedSection[2], numberedSection[1])
+                    : buildHeading(markdownHeading[1]));
                 return;
             }
 
             const numberedHeading = line.match(/^(\d+)[.)-]\s+(.+)$/);
             if (numberedHeading) {
                 flushList();
-                output.push(buildHeading(numberedHeading[2], numberedHeading[1]));
+                orderedItems.push({
+                    number: numberedHeading[1],
+                    title: numberedHeading[2],
+                    details: [],
+                });
                 return;
             }
 
             const bullet = line.match(/^[-*•–]\s+(.+)$/);
             if (bullet) {
-                listItems.push(bullet[1]);
+                if (orderedItems.length > 0) {
+                    orderedItems[orderedItems.length - 1].details.push(bullet[1]);
+                } else {
+                    listItems.push(bullet[1]);
+                }
                 return;
             }
 
             const boldOnly = line.match(/^\*\*(.+)\*\*:?$/);
             if (boldOnly) {
                 flushList();
+                flushOrderedList();
                 output.push(`<h4>${formatInline(boldOnly[1])}</h4>`);
                 return;
             }
 
             if (line.endsWith(":") && line.length <= 105) {
                 flushList();
+                flushOrderedList();
                 output.push(`<h4>${formatInline(line.slice(0, -1))}</h4>`);
                 return;
             }
 
             flushList();
+            flushOrderedList();
             output.push(`<p>${formatInline(line)}</p>`);
         });
 
         flushList();
+        flushOrderedList();
         return output.join("");
     }
 
@@ -905,14 +1001,13 @@
 
     function buildResultMeta(meta) {
         const items = [
-            { icon: icons.location, text: meta.location || fields.location?.value },
-            { icon: icons.budget, text: meta.budget || fields.budget?.value },
-            { icon: icons.group, text: formatGroupSize(meta.group_size || fields.group_size?.value) },
-            { icon: icons.model, text: meta.model || "OpenAI" },
+            { label: "Location", icon: icons.location, text: meta.location || fields.location?.value },
+            { label: "Budget", icon: icons.budget, text: meta.budget || fields.budget?.value },
+            { label: "Group size", icon: icons.group, text: formatGroupSize(meta.group_size || fields.group_size?.value) },
         ].filter((item) => String(item.text || "").trim());
 
         return items.map((item) => (
-            `<span class="result-meta-chip">${item.icon}<span>${escapeHtml(item.text)}</span></span>`
+            `<span class="result-meta-chip" aria-label="${escapeHtml(`${item.label}: ${item.text}`)}">${item.icon}<span class="sr-only">${escapeHtml(`${item.label}: `)}</span><span>${escapeHtml(item.text)}</span></span>`
         )).join("");
     }
 
@@ -954,7 +1049,7 @@
         }
 
         const header = [
-            "Weekendia — Intelligent Weekend Plan",
+            "Weekendia — Weekend Plan",
             state.currentMeta?.location ? `Location: ${state.currentMeta.location}` : "",
             state.currentMeta?.budget ? `Budget: ${state.currentMeta.budget}` : "",
             "",
@@ -979,6 +1074,9 @@
         state.currentPlan = "";
         state.currentMeta = null;
         dom.resultSection.hidden = true;
+        if (dom.resultAnnouncement) {
+            dom.resultAnnouncement.textContent = "";
+        }
         dom.plannerForm?.reset();
         clearAllFieldErrors();
         syncInterestChips();
@@ -1002,22 +1100,50 @@
     // ---------------------------------------------------------------------
 
     function initializeDemo() {
-        dom.viewDemoButton?.addEventListener("click", () => {
-            dom.demoSection.hidden = false;
-            revealInside(dom.demoSection);
-            dom.demoSection.scrollIntoView({
-                behavior: prefersReducedMotion ? "auto" : "smooth",
-                block: "center",
-            });
+        dom.viewDemoButton?.addEventListener("click", openDemo);
+        dom.demoClose?.addEventListener("click", closeDemo);
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && dom.demoSection && !dom.demoSection.hidden) {
+                event.preventDefault();
+                closeDemo();
+            }
+        });
+    }
+
+    function openDemo() {
+        if (!dom.demoSection) {
+            return;
+        }
+
+        state.demoReturnFocus = document.activeElement instanceof HTMLElement
+            ? document.activeElement
+            : dom.viewDemoButton;
+        dom.demoSection.hidden = false;
+        dom.viewDemoButton?.setAttribute("aria-expanded", "true");
+        revealInside(dom.demoSection);
+        dom.demoSection.scrollIntoView({
+            behavior: prefersReducedMotion ? "auto" : "smooth",
+            block: "center",
         });
 
-        dom.demoClose?.addEventListener("click", () => {
-            dom.demoSection.hidden = true;
-            document.querySelector(".hero")?.scrollIntoView({
-                behavior: prefersReducedMotion ? "auto" : "smooth",
-                block: "center",
-            });
+        window.requestAnimationFrame(() => {
+            dom.demoHeading?.focus({ preventScroll: true });
         });
+    }
+
+    function closeDemo() {
+        if (!dom.demoSection || dom.demoSection.hidden) {
+            return;
+        }
+
+        dom.demoSection.hidden = true;
+        dom.viewDemoButton?.setAttribute("aria-expanded", "false");
+        const returnTarget = state.demoReturnFocus?.isConnected
+            ? state.demoReturnFocus
+            : dom.viewDemoButton;
+        returnTarget?.focus({ preventScroll: true });
+        state.demoReturnFocus = null;
     }
 
     // ---------------------------------------------------------------------
@@ -1026,11 +1152,16 @@
 
     async function checkHealth() {
         if (!navigator.onLine) {
-            setSystemStatus("You are offline", "error");
+            state.health = null;
+            setSystemStatus(
+                "Offline",
+                "offline",
+                "You are offline. Existing results remain available, but a new plan needs a connection.",
+            );
             return;
         }
 
-        setSystemStatus("Checking connection", "checking");
+        setSystemStatus("Checking planner", "checking", "Checking the planner configuration.");
 
         try {
             const response = await fetch("/api/health", {
@@ -1038,27 +1169,67 @@
                 cache: "no-store",
             });
             const data = await response.json();
-            state.configReady = Boolean(data.configured);
-
-            if (data.configured) {
-                setSystemStatus("AI is ready", "ready");
-            } else {
-                setSystemStatus("The .env file needs configuration", "error");
+            if (!response.ok || data.ok !== true) {
+                throw new Error("Health endpoint unavailable");
             }
+
+            state.configReady = Boolean(data.configured);
+            state.health = {
+                configured: Boolean(data.configured),
+                mode: String(data.mode || "invalid"),
+                externalProcessing: Boolean(data.external_processing),
+            };
+            applyHealthStatus();
         } catch (_error) {
-            state.configReady = false;
-            setSystemStatus("Server unavailable", "error");
+            state.configReady = null;
+            state.health = null;
+            setSystemStatus(
+                "Status unavailable",
+                "degraded",
+                "The planner status could not be checked. Existing results remain available.",
+            );
         }
     }
 
-    function setSystemStatus(text, type) {
+    function applyHealthStatus() {
+        if (!state.health) {
+            return;
+        }
+
+        if (!state.health.configured || state.health.mode === "invalid") {
+            setSystemStatus("Setup required", "error", "Planner configuration needs attention.");
+            return;
+        }
+
+        if (state.health.mode === "demo") {
+            setSystemStatus(
+                "Demo mode",
+                "ready",
+                "Local demo mode is configured without external processing.",
+            );
+            return;
+        }
+
+        const processingDetail = state.health.externalProcessing
+            ? "Planner configured. Submitted details are processed by an external provider."
+            : "Planner configured without external processing.";
+        setSystemStatus("Planner configured", "ready", processingDetail);
+    }
+
+    function setSystemStatus(text, type, detail = text) {
         if (dom.statusText) {
             dom.statusText.textContent = text;
         }
 
         dom.systemStatus?.classList.toggle("is-ready", type === "ready");
         dom.systemStatus?.classList.toggle("is-error", type === "error");
-        dom.systemStatus?.setAttribute("title", text);
+        dom.systemStatus?.classList.toggle("is-offline", type === "offline");
+        dom.systemStatus?.classList.toggle("is-degraded", type === "degraded");
+        dom.systemStatus?.classList.toggle("is-checking", type === "checking");
+        dom.systemStatus?.setAttribute("title", detail);
+        dom.systemStatus?.setAttribute("aria-label", detail);
+        dom.body.classList.toggle("is-offline", type === "offline");
+        dom.body.classList.toggle("is-degraded", type === "degraded");
     }
 
     // ---------------------------------------------------------------------
