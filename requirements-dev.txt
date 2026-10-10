@@ -1,4 +1,4 @@
 # Install together with the exact runtime set:
 # python -m pip install -r requirements.lock -r requirements-dev.txt
 pip-audit==2.10.1
-ruff==0.15.22
+ruff==0.16.10
